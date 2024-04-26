@@ -1,11 +1,7 @@
-# Индексы Dst, Ae, Al, Bx, By, Bz, Vsw, Dsw, Tsw, Kp, Ap, F107, Lalfa
+# Файл с функиями получения и подготовки данных
+
 import spaceweather as sw
 import pandas as pd
-import datetime
-
-# Создаем список дат за два года от апреля 2022 до апреля 2024
-start_date = datetime.datetime(2022, 4, 1)
-end_date = datetime.datetime(2024, 4, 1)
 
 # Функция для выгрузки данных за период
 def get_data(start_date, end_date):
@@ -47,19 +43,24 @@ def get_data(start_date, end_date):
     data_all_years = data_all_years.drop(columns=['hour'])
 
     # Переименовать столбцы
-    data_all_years.rename(columns={'B_x': 'Bx'}, inplace=True)
-    data_all_years.rename(columns={'B_y_GSM': 'By'}, inplace=True)
-    data_all_years.rename(columns={'B_z_GSM': 'Bz'}, inplace=True)
-    data_all_years.rename(columns={'v_plasma': 'Vsw'}, inplace=True)
-    data_all_years.rename(columns={'n_p': 'Dsw'}, inplace=True)
-    data_all_years.rename(columns={'T_p': 'Tsw'}, inplace=True)
-    data_all_years.rename(columns={'f107_adj': 'F107'}, inplace=True)
-    data_all_years.rename(columns={'Lya': 'Lalfa'}, inplace=True)
+    data_all_years.rename(columns={'Dst': 'dst'}, inplace=True)
+    data_all_years.rename(columns={'AE': 'ae'}, inplace=True)
+    data_all_years.rename(columns={'AL': 'al'}, inplace=True)
+    data_all_years.rename(columns={'Kp': 'kp'}, inplace=True)
+    data_all_years.rename(columns={'Ap': 'ap'}, inplace=True)
+    data_all_years.rename(columns={'B_x': 'bx'}, inplace=True)
+    data_all_years.rename(columns={'B_y_GSM': 'by'}, inplace=True)
+    data_all_years.rename(columns={'B_z_GSM': 'bz'}, inplace=True)
+    data_all_years.rename(columns={'v_plasma': 'vsw'}, inplace=True)
+    data_all_years.rename(columns={'n_p': 'dsw'}, inplace=True)
+    data_all_years.rename(columns={'T_p': 'tsw'}, inplace=True)
+    data_all_years.rename(columns={'f107_adj': 'f107'}, inplace=True)
+    data_all_years.rename(columns={'Lya': 'lalfa'}, inplace=True)
 
     # Переупорядочить столбцы, чтобы 'data-time' был первым
     columnOrder = ['data-time'] + [column for column in data_all_years if column != 'data-time']
     data_all_years = data_all_years[columnOrder]
-    
+
     # Cрез по нужному периоду
     data_all_years['data-time'] = pd.to_datetime(data_all_years['data-time'])
     data_all_years = data_all_years[
@@ -69,14 +70,29 @@ def get_data(start_date, end_date):
     
     # Обновить индексы
     data_all_years.reset_index(drop=True, inplace=True)
+    data_all_years.set_index('data-time', inplace=True, drop=True)
+    data_all_years.index.name = None
 
     return data_all_years
 
+# Функция преобразования данных в три dataframe
+def transform_data(dataframe):
+    result = []
 
-print(get_data(start_date, end_date))
+    dataframe0 = dataframe[[
+        'dst', 'ae', 'al', 'bx', 'by', 'bz', 'vsw', 'dsw', 'tsw'
+    ]]
+    result.append(dataframe0)
+    del dataframe0
 
-# data_all_years.to_pickle('Data.pkl')
+    dataframe1 = dataframe[['kp', 'ap']]
+    dataframe1 = dataframe1.resample('3h').mean()
+    result.append(dataframe1)
+    del dataframe1
 
-# import pickle
-# data = pickle.load(open('Data.pkl', 'rb'))
-# print(data)
+    dataframe2 = dataframe[['lalfa', 'f107']]
+    dataframe2 = dataframe2.resample('24h').mean()
+    result.append(dataframe2)
+    del dataframe2
+
+    return result
