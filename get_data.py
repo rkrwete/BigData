@@ -73,6 +73,8 @@ def get_data(start_date, end_date):
     data_all_years.set_index('data-time', inplace=True, drop=True)
     data_all_years.index.name = None
 
+    data_all_years['kp'] = data_all_years['kp'] * 10
+
     return data_all_years
 
 # Функция преобразования данных в три dataframe
@@ -88,11 +90,20 @@ def transform_data(dataframe):
     dataframe1 = dataframe[['kp', 'ap']]
     dataframe1 = dataframe1.resample('3h').mean()
     result.append(dataframe1)
-    del dataframe1
+    
 
     dataframe2 = dataframe[['lalfa', 'f107']]
     dataframe2 = dataframe2.resample('24h').mean()
+    dataframe2['f107av'] = dataframe2['f107'].rolling(window=30, min_periods=1, center=True).mean()
+    dataframe2['f107av'] = dataframe2['f107av'].round(1)
+    dataframe2['skp'] = dataframe1['kp'].resample('D').sum()
+    dataframe2['apm'] = dataframe1['ap'].resample('D').mean()
+    dataframe2['apm'] = dataframe2['apm'].astype (int)
+    dataframe2['skp'] = dataframe2['skp'].astype (int)
+
     result.append(dataframe2)
+
+    del dataframe1
     del dataframe2
 
     return result
