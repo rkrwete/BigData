@@ -2,6 +2,7 @@
 
 import spaceweather as sw
 import pandas as pd
+import numpy as np
 
 # Функция для выгрузки данных за период
 def get_data(start_date, end_date):
@@ -89,12 +90,13 @@ def transform_data(dataframe):
 
     dataframe1 = dataframe[['kp', 'ap']]
     dataframe1 = dataframe1.resample('3h').mean()
+    dataframe1 = dataframe1.applymap(lambda x: round(x))
     result.append(dataframe1)
     
 
     dataframe2 = dataframe[['lalfa', 'f107']]
     dataframe2 = dataframe2.resample('24h').mean()
-    dataframe2['f107av'] = dataframe2['f107'].rolling(window=30, min_periods=1, center=True).mean()
+    dataframe2['f107av'] = dataframe2['f107'].rolling(window=81, min_periods=1, center=True).mean()
     dataframe2['f107av'] = dataframe2['f107av'].round(1)
     dataframe2['skp'] = dataframe1['kp'].resample('D').sum()
     dataframe2['apm'] = dataframe1['ap'].resample('D').mean()
