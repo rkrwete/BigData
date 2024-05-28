@@ -75,6 +75,7 @@ def get_data(start_date, end_date):
     data_all_years.index.name = None
 
     data_all_years['kp'] = data_all_years['kp'] * 10
+    data_all_years['lalfa'] = data_all_years['lalfa'] * 612
 
     return data_all_years
 
@@ -90,7 +91,7 @@ def transform_data(dataframe):
 
     dataframe1 = dataframe[['kp', 'ap']]
     dataframe1 = dataframe1.resample('3h').mean()
-    dataframe1 = dataframe1.applymap(lambda x: round(x))
+    dataframe1 = dataframe1.map(lambda x: round(x))
     result.append(dataframe1)
     
 
