@@ -4,6 +4,10 @@ import pandas as pd
 import numpy as np
 
 def linear_regression(first_values, second_values):
+    mask = second_values <= 900
+    first_values = first_values[mask]
+    second_values = second_values[mask]
+
     first_mean = np.mean(first_values)
     second_mean = np.mean(second_values)
 
