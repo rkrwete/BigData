@@ -28,4 +28,6 @@ initial_data = gd.transform_data(initial_data)
 # print(data)
 
 # Востановление Bz из dst
-print(lr.linear_regression(initial_data[0].dst, initial_data[0].bz))
+# print(lr.linear_regression(initial_data[0].dst, initial_data[0].bz))
+
+# print(initial_data[0], initial_data[1], initial_data[2])
