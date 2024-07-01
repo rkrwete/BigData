@@ -77,6 +77,23 @@ def get_data(start_date, end_date):
     data_all_years['kp'] = data_all_years['kp'] * 10
     data_all_years['lalfa'] = data_all_years['lalfa'] * 612
 
+    # Присоединение индексов SYM, ASY
+    df_SYM_ASY = pd.read_csv('data/SYM_ASY.csv')
+    df_SYM_ASY.set_index('datetime', inplace=True)
+
+    data_all_years.index = pd.to_datetime(data_all_years.index)
+    df_SYM_ASY.index = pd.to_datetime(df_SYM_ASY.index)
+
+    df_SYM_ASY = df_SYM_ASY[
+        (df_SYM_ASY.index >= start_date) & 
+        (df_SYM_ASY.index <= end_date)
+    ]
+
+    data_all_years = data_all_years[~data_all_years.index.duplicated(keep='first')]
+    df_SYM_ASY = df_SYM_ASY[~df_SYM_ASY.index.duplicated(keep='first')]
+
+    data_all_years = data_all_years.join(df_SYM_ASY, how='outer')
+
     return data_all_years
 
 # Функция преобразования данных в три dataframe
@@ -84,8 +101,9 @@ def transform_data(dataframe):
     result = []
 
     dataframe0 = dataframe[[
-        'dst', 'ae', 'al', 'bx', 'by', 'bz', 'vsw', 'dsw', 'tsw'
+        'dst', 'ae', 'al', 'bx', 'by', 'bz', 'vsw', 'dsw', 'tsw', 'SYM_D', 'SYM_H', 'ASY_D', 'ASY_H'
     ]]
+    
     result.append(dataframe0)
     del dataframe0
 

@@ -8,11 +8,8 @@ import linear_regression as lr
 
 # data = pd.read_pickle('data/final_inds.pkl')
 
-# start_date = datetime.datetime(1970, 1, 1)
-# end_date = datetime.datetime(2022, 6, 30)
-
-start_date = datetime.datetime(2009, 1, 1)
-end_date = datetime.datetime(2020, 1, 1)
+start_date = datetime.datetime(1981, 1, 1)
+end_date = datetime.datetime(1991, 5, 31)
 
 initial_data = gd.get_data(start_date, end_date)
 initial_data = gd.transform_data(initial_data)
@@ -25,7 +22,7 @@ initial_data = gd.transform_data(initial_data)
 
 # Анализ пропусков
 # data = adg.analysis_data_gaps(initial_data, initial_data[2], 'f107', 999)
-# print(data)
+print(initial_data[0])
 
 # Востановление Bz из dst
 # print(lr.linear_regression(initial_data[0].dst, initial_data[0].bz))
