@@ -7,6 +7,7 @@ import compare_data as cd
 import analysis_data_gaps as adg
 import linear_regression as lr
 from graphics_processing.graph_processing import GraphProcessing
+from graphics_processing.get_charts import GetDataFromGrarts
 
 # data = pd.read_pickle('data/final_inds.pkl')
 
@@ -32,9 +33,11 @@ from graphics_processing.graph_processing import GraphProcessing
 # print(initial_data[0], initial_data[1], initial_data[2])
 
 
-current_path = os.path.dirname(os.path.abspath(__file__))
+# current_path = os.path.dirname(os.path.abspath(__file__))
 
-current_path = os.path.join(current_path, 'graphics_processing', 'charts', 'rtae_20200131.png')
+# current_path = os.path.join(current_path, 'graphics_processing', 'charts', 'rtae_20200131.png')
 # print(current_path)
-data_from_image = GraphProcessing(current_path)
-print(data_from_image.start())
+# data_from_image = GraphProcessing(current_path)
+# print(data_from_image.start())
+
+test = GetDataFromGrarts().start('1H')
