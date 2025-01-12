@@ -2,7 +2,7 @@ import os
 import pandas as pd
 
 def get_indexes_SYM_ASY():
-    directory = "SYM_ASY"
+    directory = "data/SYM_ASY"
     files = os.listdir(directory)
 
     data_frames = []

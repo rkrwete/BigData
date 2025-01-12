@@ -7,7 +7,9 @@ from io import BytesIO
 from datetime import datetime, timedelta
 from .graph_processing import GraphProcessing
 
+
 class GetDataFromGrarts:
+    """ Класс используется для загрузки графиков и объединения их данных в один DataFrame """
     
     def __init__(self):
         self.start_day = datetime.strptime('20200101', '%Y%m%d')
@@ -16,6 +18,13 @@ class GetDataFromGrarts:
         self.current_directory = os.path.dirname(os.path.abspath(__file__))
 
     def start(self, round='none'):
+        """ Метод запускает обработку загруженных изображений 
+        
+        Parameters 
+        ----------
+        round:
+            параметр округления ('1H' - почасовое округление)
+        """
         result = pd.DataFrame()
 
         current_date = datetime.now()
@@ -25,11 +34,10 @@ class GetDataFromGrarts:
             formatted_month = date_iterator.strftime('%Y%m')
             formatted_day = date_iterator.strftime('%Y%m%d')
             file_path = os.path.join(self.current_directory, self.folder_name, f"rtae_{formatted_day}.png")
-            #проверять наличие файла 
-            # print(result)
+
             if os.path.exists(file_path):
                 data_from_img = GraphProcessing(file_path).start() 
-                data_from_img = self.__preprocessing_datafraim(data_from_img, formatted_day)
+                data_from_img = self.__preprocessing_dataframe(data_from_img, formatted_day)
 
                 result = pd.concat([result, data_from_img], ignore_index=False) 
 
@@ -40,6 +48,7 @@ class GetDataFromGrarts:
             print(result)
 
     def downloads(self):
+        """ Метод запускает загрузку изображений """
         self.__check_folder()
         current_date = datetime.now()
         date_iterator = self.start_day
@@ -54,23 +63,43 @@ class GetDataFromGrarts:
 
             date_iterator += timedelta(days=1)
 
-    def __preprocessing_datafraim(self, datafraim, day):
-        data_from_img = datafraim.iloc[:-1]
+    def __preprocessing_dataframe(self, dataframe, day):
+        """ Предобработка dataframe """
+        data_from_img = dataframe.iloc[:-1]
         time_offsets = pd.to_timedelta(data_from_img.index)
         data_from_img.index = pd.to_datetime(day) + time_offsets
 
         return data_from_img
 
     def __check_folder(self):
+        """ Проверка наличия папки """
         folder_path = os.path.join(self.current_directory, self.folder_name)
 
         if not os.path.exists(folder_path):
             os.makedirs(folder_path)
 
     def __get_url(self, month, day):
+        """ Получение url 
+        
+        Parameters 
+        ----------
+        month:
+            месяц
+        day:
+            день
+        """
         return f"{self.url}{month}/rtae_{day}.png"
     
     def __save_img(self, url, day):
+        """ Загрузка и сохранение файла 
+        
+        Parameters 
+        ----------
+        url:
+            url 
+        day:
+            день
+        """
         file_path = os.path.join(self.current_directory, self.folder_name, f"rtae_{day}.png")
 
         if not os.path.exists(file_path):

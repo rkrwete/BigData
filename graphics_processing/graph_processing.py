@@ -5,50 +5,59 @@ import numpy as np
 import pandas as pd 
 import matplotlib.pyplot as plt
 
-
-current_path = os.path.dirname(os.path.abspath(__file__))
-current_path = os.path.join(current_path, 'charts', 'rtae_20200131.png')
-
 class GraphProcessing:
+    """ Класс GraphProcessing используется для получения данных индекса AU из графиков
+
+    Attributes
+    ----------
+    path_img: str
+        полный путь до файла изображения
+    """
 
     def __init__(self, path_img):
         self.path_img = path_img
 
-    def getTimes(self):
-        print(self.__get_array_times())
-
     def start(self):
+        """ Начинает работу класса """
         image_array = self.img_to_array()
         result = self.image_array_to_data(image_array)
 
         return result
 
     def img_to_array(self):
+        """ Преобразует файл изображения в массив 
+            Удаляет не нужные строки и столбцы из массива  
+        """
         image = Image.open(self.path_img)
+        print('Обработано'+ self.path_img)
         image_array = np.array(image)
         image_array[:, :, 0] = 0 
         image_array[:, :, 1] = 0
-        image_array = image_array[27:198, 82:649] # Удаляет не нужные строки и столбцы
+        image_array = image_array[27:198, 82:649]
         return image_array
 
     def __get_count_rows(self):
+        """ Считает количество строк в массиве изображения """
         return len(self.img_to_array())
     
     def __get_count_columns(self):
+        """ Считает количество столбцов в массиве изображения """
         return len(self.img_to_array()[0])
     
     def __get_array_values(self):
+        """ Присвоение каждой строке значения индекса """
         max_value = 1000
         min_value = -2000
         count_rows = self.__get_count_rows()
 
-        values = np.linspace(max_value, min_value, count_rows) # Массив значений
+        values = np.linspace(max_value, min_value, count_rows)
         values[57] = 0
 
         return values
     
     def __get_array_times(self):
-        times = [] # Массив дат 
+        """ Присвоение каждому столбцу значения даты """
+        times = []  
         start_time = datetime.strptime("00:00:00", "%H:%M:%S")
         second_in_day = 60 * 60 * 24
         count_columns = self.__get_count_columns()
@@ -64,6 +73,13 @@ class GraphProcessing:
         return times
     
     def image_array_to_data(self, image_array):
+        """ Получение данных из массива изображения
+
+        Parameters 
+        ----------
+        image_array
+            массив изображения
+        """
         times = self.__get_array_times()
         values = self.__get_array_values()
         result = pd.DataFrame(index=times, columns=['AU'])
@@ -82,7 +98,7 @@ class GraphProcessing:
         return result
     
 
-
+current_path = os.path.dirname(os.path.abspath(__file__))
+current_path = os.path.join(current_path, 'charts', 'rtae_20200109.png')
 # p = GraphProcessing(current_path).start()
 # print(p)
-
