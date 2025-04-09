@@ -7,7 +7,6 @@ from io import BytesIO
 from datetime import datetime, timedelta
 from .graph_processing import GraphProcessing
 
-
 class GetDataFromGrarts:
     """ Класс используется для загрузки графиков и объединения их данных в один DataFrame """
     
